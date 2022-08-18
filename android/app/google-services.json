@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "9570304384",
+    "project_id": "trucnkgo-drivers",
+    "storage_bucket": "trucnkgo-drivers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9570304384:android:188258025596dbcb19c165",
+        "android_client_info": {
+          "package_name": "com.example.asensiofinal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9570304384-8cug3ujqcclhcnccupmhhe5vbvf7679s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC57Swc3yu9U5UGFoB7Y_pDNKTJ4yZ3kWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9570304384-8cug3ujqcclhcnccupmhhe5vbvf7679s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9570304384:android:e5ba81bf0db12f7a19c165",
+        "android_client_info": {
+          "package_name": "com.example.truckngo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9570304384-8cug3ujqcclhcnccupmhhe5vbvf7679s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC57Swc3yu9U5UGFoB7Y_pDNKTJ4yZ3kWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9570304384-8cug3ujqcclhcnccupmhhe5vbvf7679s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
