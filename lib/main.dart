@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import 'package:truckngo/data/repositories/authentication_repository.dart';
 import 'package:truckngo/data/repositories/user_repository.dart';
 import 'package:truckngo/firebase_options.dart';
 import 'package:truckngo/logic/bloc/AuthenticationBloc/authentication_bloc.dart';
+import 'package:truckngo/provider/user_phone_number_provider.dart';
+import 'package:truckngo/services/storage_service.dart';
 
 import 'Screens/login/login.dart';
 import 'Screens/maps/bloc/maps_bloc.dart';
@@ -23,11 +26,15 @@ Future<void> main() async {
   );
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   bool isLoggedIn = AuthService.instance.isLoggedIn;
+  String? phoneNumber;
+  if (isLoggedIn) {
+    phoneNumber = await StorageService.instance.getNumber();
+  }
   runApp(MyApp(
-    authenticationRepository: AuthenticationRepository(),
-    userRepository: UserRepository(),
-    isLoggedIn: isLoggedIn,
-  ));
+      authenticationRepository: AuthenticationRepository(),
+      userRepository: UserRepository(),
+      isLoggedIn: isLoggedIn,
+      phoneNumber: phoneNumber));
   configLoading();
 }
 
@@ -53,15 +60,17 @@ void configLoading() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({
-    Key? key,
-    required this.authenticationRepository,
-    required this.userRepository,
-    required this.isLoggedIn,
-  }) : super(key: key);
+  const MyApp(
+      {Key? key,
+      required this.authenticationRepository,
+      required this.userRepository,
+      required this.isLoggedIn,
+      required this.phoneNumber})
+      : super(key: key);
   final AuthenticationRepository authenticationRepository;
   final UserRepository userRepository;
   final bool isLoggedIn;
+  final String? phoneNumber;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -80,74 +89,78 @@ class MyApp extends StatelessWidget {
             create: (context) => MapsBloc(),
           ),
         ],
-        child: MaterialApp(
-          title: 'TRUCKNGO',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.pink,
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Color(0xFFFFCE00),
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+        child: ChangeNotifierProvider<PhoneNumberProvider>(
+          create: (_) => PhoneNumberProvider(phoneNumber),
+          child: MaterialApp(
+            title: 'TRUCKNGO',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: Colors.pink,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xFFFFCE00),
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.black),
                 ),
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+              ),
+              unselectedWidgetColor: const Color(0x50333333),
+              shadowColor: const Color(0xFFe6e6e6).withOpacity(0.5),
+              backgroundColor: Colors.white,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              fontFamily: 'Poppins',
+              textTheme: TextTheme(
+                headline1: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                headline2: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+                headline3: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                headline4: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                headline5: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                headline6: GoogleFonts.poppins(
+                  color: Theme.of(context).unselectedWidgetColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+                bodyText1: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                bodyText2: GoogleFonts.poppins(
+                  color: const Color(0xFF111111),
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            unselectedWidgetColor: const Color(0x50333333),
-            shadowColor: const Color(0xFFe6e6e6).withOpacity(0.5),
-            backgroundColor: Colors.white,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            fontFamily: 'Poppins',
-            textTheme: TextTheme(
-              headline1: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              headline2: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-              headline3: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              headline4: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-              headline5: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              headline6: GoogleFonts.poppins(
-                color: Theme.of(context).unselectedWidgetColor,
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-              ),
-              bodyText1: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              bodyText2: GoogleFonts.poppins(
-                color: const Color(0xFF111111),
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            home: isLoggedIn ? MainPage() : const LoginScreen(),
+            builder: EasyLoading.init(),
           ),
-          home: isLoggedIn ? MainPage() : const LoginScreen(),
-          builder: EasyLoading.init(),
         ),
       ),
     );
