@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:formz/formz.dart';
 
 import 'package:truckngo/data/repositories/authentication_repository.dart';
@@ -28,14 +29,14 @@ class LoginCubit extends Cubit<LoginState> {
     ));
   }
 
-  void onSubmitted() async {
+  void onSubmitted(BuildContext context) async {
     if (state.status.isValidated) {
       emit(state.copyWith(status: FormzStatus.submissionInProgress));
       try {
         await _authenticationRepository.logInWithEmailAndPassword(
-          email: state.email.value,
-          password: state.password.value,
-        );
+            email: state.email.value,
+            password: state.password.value,
+            context: context);
         emit(state.copyWith(status: FormzStatus.submissionSuccess));
       } catch (err) {
         emit(

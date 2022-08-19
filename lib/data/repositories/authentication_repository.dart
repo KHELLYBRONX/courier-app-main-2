@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:truckngo/models/models.dart';
 import 'package:truckngo/models/wrappers/auth_data.dart';
 import 'package:truckngo/models/wrappers/auth_status.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:truckngo/provider/user_phone_number_provider.dart';
+import 'package:truckngo/services/cloud_firestore_service.dart';
+import 'package:truckngo/services/storage_service.dart';
 
 class AuthenticationRepository {
   final _controller = StreamController<AuthStatus>();
@@ -17,14 +22,23 @@ class AuthenticationRepository {
     yield* _controller.stream;
   }
 
-  Future<void> signUp({required String email, required String password}) async {
+  Future<void> signUp(
+      {required String email,
+      required String password,
+      required String name,
+      required String number}) async {
     try {
       firebase_auth.UserCredential result =
           await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print(result.user);
+      //update user's name
+      await result.user?.updateDisplayName(name);
+      await CloudFirestoreService.instance
+          .saveUsersPhoneNumber(result.user!.uid, number);
+      await StorageService.instance.saveNumber(number);
+      //TODO: update phone number state
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (_) {
@@ -32,16 +46,22 @@ class AuthenticationRepository {
     }
   }
 
-  Future<void> logInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> logInWithEmailAndPassword(
+      {required String email,
+      required String password,
+      required BuildContext context}) async {
     try {
-      firebase_auth.UserCredential result = await auth.signInWithEmailAndPassword(
+      firebase_auth.UserCredential result =
+          await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       final user = result.user;
+      String? phoneNumber =
+          await CloudFirestoreService.instance.getNumber(user!.uid);
+      await StorageService.instance.saveNumber(phoneNumber!);
+      Provider.of<PhoneNumberProvider>(context, listen: false).setNumber =
+          phoneNumber;
       AuthData? authData =
           AuthData((b) => b..user = User((a) => a..id = user?.uid).toBuilder());
       _controller.add(AuthStatus.authenticated(authData));
@@ -54,9 +74,8 @@ class AuthenticationRepository {
 
   Future<void> logOut() async {
     try {
-      await Future.wait([
-        auth.signOut(),
-      ]);
+      await Future.wait(
+          [auth.signOut(), StorageService.instance.deleteNumber()]);
       _controller.add(
         AuthStatus.unauthenticated(
           AuthData(
