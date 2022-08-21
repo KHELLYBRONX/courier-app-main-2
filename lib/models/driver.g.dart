@@ -50,6 +50,13 @@ class _$DriverSerializer implements StructuredSerializer<Driver> {
         ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
+    value = object.phoneNumber;
+    if (value != null) {
+      result
+        ..add('phoneNumber')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
     value = object.carImage;
     if (value != null) {
       result
@@ -104,6 +111,10 @@ class _$DriverSerializer implements StructuredSerializer<Driver> {
           result.driverImage = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String?;
           break;
+        case 'phoneNumber':
+          result.phoneNumber = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
         case 'carImage':
           result.carImage = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String?;
@@ -135,6 +146,8 @@ class _$Driver extends Driver {
   @override
   final String? driverImage;
   @override
+  final String? phoneNumber;
+  @override
   final String? carImage;
   @override
   final int? truckType;
@@ -150,6 +163,7 @@ class _$Driver extends Driver {
       this.longitude,
       this.latitude,
       this.driverImage,
+      this.phoneNumber,
       this.carImage,
       this.truckType,
       this.numberPlate})
@@ -173,6 +187,7 @@ class _$Driver extends Driver {
         longitude == other.longitude &&
         latitude == other.latitude &&
         driverImage == other.driverImage &&
+        phoneNumber == other.phoneNumber &&
         carImage == other.carImage &&
         truckType == other.truckType &&
         numberPlate == other.numberPlate;
@@ -185,10 +200,12 @@ class _$Driver extends Driver {
             $jc(
                 $jc(
                     $jc(
-                        $jc($jc($jc(0, id.hashCode), name.hashCode),
-                            longitude.hashCode),
-                        latitude.hashCode),
-                    driverImage.hashCode),
+                        $jc(
+                            $jc($jc($jc(0, id.hashCode), name.hashCode),
+                                longitude.hashCode),
+                            latitude.hashCode),
+                        driverImage.hashCode),
+                    phoneNumber.hashCode),
                 carImage.hashCode),
             truckType.hashCode),
         numberPlate.hashCode));
@@ -202,6 +219,7 @@ class _$Driver extends Driver {
           ..add('longitude', longitude)
           ..add('latitude', latitude)
           ..add('driverImage', driverImage)
+          ..add('phoneNumber', phoneNumber)
           ..add('carImage', carImage)
           ..add('truckType', truckType)
           ..add('numberPlate', numberPlate))
@@ -232,6 +250,10 @@ class DriverBuilder implements Builder<Driver, DriverBuilder> {
   String? get driverImage => _$this._driverImage;
   set driverImage(String? driverImage) => _$this._driverImage = driverImage;
 
+  String? _phoneNumber;
+  String? get phoneNumber => _$this._phoneNumber;
+  set phoneNumber(String? phoneNumber) => _$this._phoneNumber = phoneNumber;
+
   String? _carImage;
   String? get carImage => _$this._carImage;
   set carImage(String? carImage) => _$this._carImage = carImage;
@@ -254,6 +276,7 @@ class DriverBuilder implements Builder<Driver, DriverBuilder> {
       _longitude = $v.longitude;
       _latitude = $v.latitude;
       _driverImage = $v.driverImage;
+      _phoneNumber = $v.phoneNumber;
       _carImage = $v.carImage;
       _truckType = $v.truckType;
       _numberPlate = $v.numberPlate;
@@ -282,6 +305,7 @@ class DriverBuilder implements Builder<Driver, DriverBuilder> {
             longitude: longitude,
             latitude: latitude,
             driverImage: driverImage,
+            phoneNumber: phoneNumber,
             carImage: carImage,
             truckType: truckType,
             numberPlate: numberPlate);

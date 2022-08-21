@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:provider/provider.dart';
 import 'package:truckngo/models/directiondetails.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:truckngo/models/userCL.dart';
@@ -25,6 +26,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../../models/address.dart';
 import '../../models/driver.dart';
+import '../../provider/user_phone_number_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/ride_service.dart';
 import '../login/login.dart';
@@ -122,16 +124,25 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       mapBottomPadding = (Platform.isAndroid) ? 200 : 190;
       drawerCanOpen = true;
     });
-    Ride ride = Ride((b) => b
-      ..riderId = AuthService.instance.currentUser?.uid
-      ..driverId = availableDrivers[0].id
-      ..pickUpLatitude = pickUpAddress?.latitude
-      ..pickUpLongitude = pickUpAddress?.longitude
-      ..destinationLatitude = destinationAddress?.latitude
-      ..status = "waiting"
-      ..price = HelperMethods.estimateFares(tripDirectionDetails!) * 6.5
-      ..destinationLongitude = destinationAddress?.longitude);
-    createRide(ride);
+    if (availableDrivers.isNotEmpty) {
+      Ride ride = Ride((b) => b
+        ..riderId = AuthService.instance.currentUser?.uid
+        ..driverId = availableDrivers[0].id
+        ..pickUpLatitude = pickUpAddress?.latitude
+        ..pickUpLongitude = pickUpAddress?.longitude
+        ..destinationLatitude = destinationAddress?.latitude
+        ..status = "waiting"
+        ..price = HelperMethods.estimateFares(tripDirectionDetails!) * 6.5
+        ..destinationLongitude = destinationAddress?.longitude);
+      var phone = Provider.of<PhoneNumberProvider>(context, listen: false)
+          .getPhoneNumber;
+      createRide(
+          ride, destinationAddress?.placeName, pickUpAddress?.placeName, phone,
+          driversNumber: availableDrivers[0].phoneNumber);
+      return;
+    }
+
+    //TODO: show error message of drivers not available
   }
 
   showTripSheet() {
@@ -264,8 +275,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginScreen()
-                          ),
+                              builder: (BuildContext context) =>
+                                  const LoginScreen()),
                           (route) => false,
                         );
                       },
