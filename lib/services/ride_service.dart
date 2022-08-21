@@ -34,6 +34,7 @@ Future<Stream<Driver?>> findDriversAvailble(
         ..driverImage = docMap['driverImage']
         ..numberPlate = docMap['numberPlate']
         ..truckType = docMap['truckType']
+        ..phoneNumber = doc['phoneNumber']
         ..carImage = docMap['carImage'])));
     }
   });
