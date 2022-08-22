@@ -25,6 +25,8 @@ abstract class Driver implements Built<Driver, DriverBuilder> {
 
   String? get driverImage;
 
+  String? get phoneNumber;
+
   String? get carImage;
 
   int? get truckType;

@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/ride.dart';
+import 'auth_service.dart';
 
 Future<Stream<Driver?>> findDriversAvailble(
     {required double longitude, required double latitude}) async {
@@ -33,13 +34,16 @@ Future<Stream<Driver?>> findDriversAvailble(
         ..driverImage = docMap['driverImage']
         ..numberPlate = docMap['numberPlate']
         ..truckType = docMap['truckType']
+        ..phoneNumber = doc['phoneNumber']
         ..carImage = docMap['carImage'])));
     }
   });
   return driversList.stream;
 }
 
-Future<void> createRide(Ride ride) async {
+Future<void> createRide(Ride ride, String? destinationPlaceName,
+    String? pickUpPlaceName, String? phoneNumber,
+    {required String? driversNumber}) async {
   String uid = const Uuid().v1();
   DatabaseReference ref = FirebaseDatabase.instance.ref("rideRequest/$uid");
 
@@ -62,9 +66,17 @@ Future<void> createRide(Ride ride) async {
     'driver_id': ride.driverId,
     'status': ride.status,
     'price': ride.price,
+    'email': AuthService.instance.currentUser?.email,
+    'name': AuthService.instance.currentUser?.displayName,
+    'user_phone_number': phoneNumber,
+    'destination_place_name': destinationPlaceName,
+    'pickup_place_name': pickUpPlaceName,
+    'drivers_phone_number': driversNumber
   };
 
-  await ref.set(rideMap);
+  await ref.set(rideMap).then((value) => {
+        //TODO: send sms text to driver here
+      });
 
   startRideListerner(uid);
 
